@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inspección Extintores · CONEQUIPOS</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+
+    <header class="header">
+      <img src="/imag/conequipos.png" alt="CONEQUIPOS" class="logo">
+      <h1>INSPECCIÓN DE EXTINTORES</h1>
+      <div class="codes">
+        <span><b>CÓDIGO:</b> SG.SST-F-25</span>
+        <span><b>VERSIÓN:</b> 01</span>
+        <span><b>FECHA:</b> 27/01/2020</span>
+      </div>
+    </header>
+
+    <form id="preopForm" novalidate>
+
+      <section class="card">
+        <h2>1. Datos Generales</h2>
+        <div class="grid-2">
+          <label>Fecha de inspección
+            <input type="date" name="fecha_inspeccion" required>
+          </label>
+          <label>Área / Unidad operativa
+            <input type="text" name="area_unidad" required placeholder="Ej: Producción">
+          </label>
+          <label>Área donde está el extintor
+            <input type="text" name="area_equipo" required placeholder="Ej: Bodega 1">
+          </label>
+          <label>Fecha vencimiento recarga
+            <input type="date" name="fecha_vencimiento_recarga" required>
+          </label>
+          <label>Libras del extintor
+            <select name="libras" required>
+              <option value="">Seleccionar...</option>
+              <option value="5">5 lb</option>
+              <option value="10">10 lb</option>
+              <option value="20">20 lb</option>
+            </select>
+          </label>
+          <label>Tipo de extintor
+            <input type="text" value="ABC Multipropósito" disabled>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2. Estado del Extintor</h2>
+        <p class="hint">Marca <b>B</b> (Bueno), <b>M</b> (Malo) o <b>N/A</b> (No Aplica) para cada ítem.</p>
+        <div id="itemsList" class="items-list"></div>
+      </section>
+
+      <section class="card">
+        <h2>3. Observaciones</h2>
+        <textarea name="observaciones" rows="3" placeholder="Observaciones (opcional)"></textarea>
+      </section>
+
+      <section class="card">
+        <h2>4. Foto del Extintor</h2>
+        <p class="hint-bold">Toma una foto del extintor</p>
+        <div class="photo-zone" id="photoZone">
+          <input type="file" id="photoInput" accept="image/*" capture="environment" hidden>
+          <button type="button" class="photo-btn" id="photoBtn">
+            📷 Tomar / Elegir Foto
+          </button>
+          <div class="photo-preview hidden" id="photoPreview">
+            <img id="photoImg" alt="Vista previa">
+            <button type="button" class="photo-remove" id="photoRemove" title="Quitar foto">✕</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>5. Responsable y Firma</h2>
+        <div class="grid-2">
+          <label>Responsable de la inspección
+            <input type="text" name="responsable" required placeholder="Nombre completo" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" maxlength="80">
+          </label>
+          <label>Cédula
+            <input type="text" name="cedula" required placeholder="Solo números" inputmode="numeric" pattern="[0-9]+" maxlength="15">
+          </label>
+        </div>
+        <label>Firma (escribe tu nombre completo)
+          <input type="text" name="firma" required placeholder="Nombre completo" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" maxlength="80">
+        </label>
+      </section>
+
+      <div class="note">
+        <b>NOTA:</b> SI LA SELECCIÓN NO CUMPLE, NO SE PUEDE USAR EL EQUIPO.
+      </div>
+
+      <button type="submit" class="btn-submit" id="btnSubmit">Enviar Registro</button>
+    </form>
+  </div>
+
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-icon" id="modalIcon">✓</div>
+      <h3 id="modalTitle">Registro enviado</h3>
+      <p id="modalMessage">El formulario fue guardado correctamente.</p>
+      <button id="modalBtn" class="modal-btn">Aceptar</button>
+    </div>
+  </div>
+
+  <iframe name="iframeOculto" style="display:none;"></iframe>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
