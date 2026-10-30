@@ -13,7 +13,6 @@ const ITEMS = [
   { key: 'boquilla',      label: 'Boquilla' },
   { key: 'manija',        label: 'Manija' },
   { key: 'senalizacion',  label: 'Señalización' },
-  { key: 'ubicacion',     label: 'Ubicación' },
   { key: 'visibilidad',   label: 'Visibilidad' },
   { key: 'acceso',        label: 'Acceso al extintor' },
   { key: 'pintura',       label: 'Pintura' },
@@ -111,7 +110,7 @@ document.getElementById('preopForm').addEventListener('submit', async (e) => {
   // ===== 1. VALIDACIÓN DE CAMPOS OBLIGATORIOS =====
   const camposObligatorios = [
     { campo: 'fecha_inspeccion',          nombre: 'Fecha de inspección' },
-    { campo: 'area_unidad',               nombre: 'Área / Unidad operativa' },
+    { campo: 'ubicacion',   nombre: 'Ubicación' },
     { campo: 'area_equipo',               nombre: 'Área donde está el extintor' },
     { campo: 'fecha_vencimiento_recarga', nombre: 'Fecha vencimiento recarga' },
     { campo: 'libras',                    nombre: 'Libras del extintor' }
@@ -172,7 +171,7 @@ document.getElementById('preopForm').addEventListener('submit', async (e) => {
 
   const data = {
     fecha_inspeccion:          form.fecha_inspeccion.value,
-    area_unidad:               form.area_unidad.value.trim(),
+    ubicacion: form.ubicacion.value.trim(),
     area_equipo:               form.area_equipo.value.trim(),
     fecha_vencimiento_recarga: form.fecha_vencimiento_recarga.value,
     libras:                    form.libras.value,
@@ -235,7 +234,17 @@ document.getElementById('preopForm').addEventListener('submit', async (e) => {
   // ===== 10. GENERAR PDF Y ENVIAR A DRIVE =====
   try {
     data.created_at = new Date().toLocaleString('es-CO')
-    const doc = await generarPDFPreoperacional(data, ITEMS, data.foto_url || null)
+        // Convertir la foto local a Base64 para que el PDF no dependa de internet
+    let fotoParaPDF = null
+    if (fotoSeleccionada) {
+      fotoParaPDF = await new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => resolve(e.target.result)
+        reader.readAsDataURL(fotoSeleccionada)
+      })
+    }
+
+    const doc = await generarPDFPreoperacional(data, ITEMS, fotoParaPDF)
     const nombre = nombreArchivoPDF(data)
 
     // Convertir el PDF a Blob

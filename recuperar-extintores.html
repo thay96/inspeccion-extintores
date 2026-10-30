@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Recuperación de Extintores</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    .log { background: #222; color: #0f0; padding: 15px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; margin-top: 20px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #2E7D32; color: white; border: none; border-radius: 5px; }
+    button:disabled { background: #999; }
+  </style>
+</head>
+<body>
+  <h2>Recuperación de PDFs - Extintores</h2>
+  <p>Buscaremos el registro de Bladimiro Palacios de hoy y lo enviaremos al Drive.</p>
+  <button id="btnStart">Iniciar Rescate</button>
+  <div class="log" id="log">Esperando inicio...</div>
+
+  <script type="module">
+    import { createClient } from '@supabase/supabase-js'
+    import { generarPDFPreoperacional, nombreArchivoPDF } from './pdf.js'
+
+    const supabase = createClient(
+      import.meta.env.VITE_SUPABASE_URL,
+      import.meta.env.VITE_SUPABASE_ANON_KEY
+    )
+
+    // Los 11 ítems de extintores
+    const ITEMS = [
+      { key: 'manometro',     label: 'Manómetro' },
+      { key: 'pasador',       label: 'Pasador de seguridad' },
+      { key: 'boquilla',      label: 'Boquilla' },
+      { key: 'manija',        label: 'Manija' },
+      { key: 'senalizacion',  label: 'Señalización' },
+      { key: 'visibilidad',   label: 'Visibilidad' },
+      { key: 'acceso',        label: 'Acceso al extintor' },
+      { key: 'pintura',       label: 'Pintura' },
+      { key: 'golpes',        label: 'Golpes' },
+      { key: 'etiquetas',     label: 'Etiquetas' }
+    ]
+
+    const logDiv = document.getElementById('log')
+    const btn = document.getElementById('btnStart')
+    const log = (msg) => { logDiv.innerHTML += `\n${msg}`; logDiv.scrollTop = logDiv.scrollHeight }
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true
+      logDiv.innerHTML = 'Buscando a Bladimiro...'
+
+      // Buscar el registro de Bladimiro en la tabla de extintores
+      const { data: registros, error } = await supabase
+        .from('inspeccion_extintores')
+        .select('*')
+        .ilike('firma', '%Alejandro%') // Búsqueda flexible
+
+      if (error) {
+        log('❌ Error al buscar: ' + error.message)
+        btn.disabled = false
+        return
+      }
+
+      if (!registros || registros.length === 0) {
+        log('⚠️ No se encontró el registro de Bladimiro.')
+        btn.disabled = false
+        return
+      }
+
+      log(`✅ Se encontró el registro. Procesando PDF...`)
+
+      for (const data of registros) {
+        try {
+          data.created_at = new Date(data.created_at).toLocaleString('es-CO')
+          
+          const doc = await generarPDFPreoperacional(data, ITEMS, data.foto_url || null)
+          const nombre = nombreArchivoPDF(data)
+          const pdfBlob = doc.output('blob')
+
+          const pathPdf = `pdfs-extintores/${Date.now()}-${Math.random().toString(36).slice(2,8)}.pdf`
+          await supabase.storage.from('fotos-preoperacional').upload(pathPdf, pdfBlob, { contentType: 'application/pdf' })
+          
+          const { data: urlData } = supabase.storage.from('fotos-preoperacional').getPublicUrl(pathPdf)
+          const pdfUrl = urlData.publicUrl
+
+          await new Promise((resolve) => {
+            const formDrive = document.createElement('form')
+            formDrive.method = 'POST'
+            formDrive.action = 'https://script.google.com/macros/s/AKfycbzcW5myeQ2tcB8mj1upZ0WF7I6p8PP1zbCAOdkzw5JNBH01wGZrwEMNokYdBQlZIn4/exec' // URL de Extintores
+            formDrive.target = 'iframeOculto'
+            formDrive.style.display = 'none'
+
+            const input = document.createElement('input')
+            input.type = 'hidden'
+            input.name = 'datos'
+            input.value = JSON.stringify({ nombre, pdfUrl })
+            formDrive.appendChild(input)
+            document.body.appendChild(formDrive)
+            formDrive.submit()
+
+            setTimeout(() => {
+              document.body.removeChild(formDrive)
+              resolve()
+            }, 2500)
+          })
+
+          log(`✅ Enviado a Drive: ${nombre}`)
+        } catch (err) {
+          log(`❌ Error: ${err.message}`)
+        }
+      }
+      log('\n🎉 ¡Rescate finalizado! Revisa la carpeta de Extintores en Drive.')
+      btn.disabled = false
+    })
+  </script>
+  <iframe name="iframeOculto" style="display:none;"></iframe>
+</body>
+</html>

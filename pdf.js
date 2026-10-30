@@ -73,7 +73,7 @@ export async function generarPDFPreoperacional(datos, items, fotoUrl) {
 
   doc.text(`Fecha de inspección: ${datos.fecha_inspeccion}`, colIzq, y)
   doc.text(`Libras: ${datos.libras} lb`,                     colDer, y); y += 6
-  doc.text(`Área / Unidad: ${datos.area_unidad}`,            colIzq, y)
+  doc.text(`Ubicación / Obra: ${datos.ubicacion}`,           colIzq, y)
   doc.text(`Tipo: ABC Multipropósito`,                       colDer, y); y += 6
   doc.text(`Área del extintor: ${datos.area_equipo}`,        colIzq, y)
   doc.text(`Vence recarga: ${datos.fecha_vencimiento_recarga}`, colDer, y); y += 6

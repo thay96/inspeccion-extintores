@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inspección Extintores · CONEQUIPOS</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
+
 <body>
   <div class="container">
 
@@ -27,8 +29,8 @@
           <label>Fecha de inspección
             <input type="date" name="fecha_inspeccion" required>
           </label>
-          <label>Área / Unidad operativa
-            <input type="text" name="area_unidad" required placeholder="Ej: Producción">
+          <label>Ubicación / Obra
+            <input type="text" name="ubicacion" required placeholder="Ej: Producción">
           </label>
           <label>Área donde está el extintor
             <input type="text" name="area_equipo" required placeholder="Ej: Bodega 1">
@@ -80,14 +82,17 @@
         <h2>5. Responsable y Firma</h2>
         <div class="grid-2">
           <label>Responsable de la inspección
-            <input type="text" name="responsable" required placeholder="Nombre completo" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" maxlength="80">
+            <input type="text" name="responsable" required placeholder="Nombre completo"
+              pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" maxlength="80">
           </label>
           <label>Cédula
-            <input type="text" name="cedula" required placeholder="Solo números" inputmode="numeric" pattern="[0-9]+" maxlength="15">
+            <input type="text" name="cedula" required placeholder="Solo números" inputmode="numeric" pattern="[0-9]+"
+              maxlength="15">
           </label>
         </div>
         <label>Firma (escribe tu nombre completo)
-          <input type="text" name="firma" required placeholder="Nombre completo" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" maxlength="80">
+          <input type="text" name="firma" required placeholder="Nombre completo" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+            maxlength="80">
         </label>
       </section>
 
@@ -111,4 +116,5 @@
   <iframe name="iframeOculto" style="display:none;"></iframe>
   <script type="module" src="/app.js"></script>
 </body>
+
 </html>
